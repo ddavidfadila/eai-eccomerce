@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
@@ -18,26 +17,25 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-       $response = Http::withHeaders([
-    'Authorization' => 'Bearer ' . request()->cookie('auth-token'),
-])->get('http://127.0.0.1:8080/api/cart');
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . request()->cookie('auth-token'),
+        ])->get('http://127.0.0.1:8080/api/cart');
 
-$cartRes = $response->json();
-$carts = [];
+        $cartRes = $response->json();
+        $carts = [];
 
-// Periksa apakah $cartRes bukan null dan memiliki kunci 'status'
-if ($cartRes !== null && isset($cartRes['status'])) {
-    if (!$cartRes['status']) {
-        $carts = $cartRes['data'];
-    }
-} else {
-    // Handle jika $cartRes null atau tidak memiliki kunci 'status'
-    // Contoh:
-    // Log pesan kesalahan
-    // Menampilkan pesan kesalahan kepada pengguna
-    // Mengembalikan respons error
-}
-
+        // Periksa apakah $cartRes bukan null dan memiliki kunci 'status'
+        if ($cartRes !== null && isset($cartRes['status'])) {
+            if ($cartRes['status'] == 200) {
+                $carts = $cartRes['data'];
+            } else {
+                // Log pesan kesalahan atau tambahkan penanganan error
+                // contoh: Log::error('API error: ' . $cartRes['message']);
+            }
+        } else {
+            // Handle jika $cartRes null atau tidak memiliki kunci 'status'
+            // contoh: Log::error('API response is null or missing status key');
+        }
 
         return view('profile.edit', [
             'jwt' => request()->cookie('auth-token'),
